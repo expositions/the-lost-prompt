@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auf der Suche nach der verlorenen Prompt</title>
+    <link type="image/png" sizes="16x16" rel="icon" href="icons8-magic-book-flat-16.png">
+    <link type="image/png" sizes="32x32" rel="icon" href="icons8-magic-book-flat-32.png">
+    <link type="image/png" sizes="96x96" rel="icon" href="icons8-magic-book-flat-96.png">
+    <link rel="stylesheet" href="styles.css">
+    <link id="primary-font-link" rel="stylesheet" href="">
+    <link id="secondary-font-link" rel="stylesheet" href="">
+    <script src="levels.js" defer></script>
+    <script src="script.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/fireworks-js@2.x/dist/index.umd.js"></script>
+
+</head>
+<body>
+    <div id="level-indicator" class="level-indicator"></div>
+    <div class="background" id="background">
+        <div class="background" id="background"></div>
+
+        <div id="message-overlay" class="message-overlay hidden">
+            <div id="message-overlay-content" class="message-overlay-content">
+                <p id="message-overlay-message"></p>
+                <button id="message-overlay-button" onclick="hideMessageOverlay()">OK</button>
+            </div>
+        </div>
+
+        <div class="overlay">
+            <div class="task-book draggable" id="task-book">
+                <div class="handle"></div>
+                <h2>Aktuelle Aufgabe</h2>
+                <p id="task"></p>
+            </div>
+            <div class="input-area draggable" id="input-area">
+                <div class="handle"></div>
+                <h2>Deine Prompt</h2>
+                <textarea id="prompt" rows="6" placeholder="Schreibe deine Prompt hier..."></textarea>
+                <div class="actions">
+                    <button onclick="handleSendPromptClick()">Absenden</button>
+                    <select id="model" hidden="true">
+                        <option value="vanilla">Vanilla Modell (normal)</option>
+                        <option value="adversarial">Adversarial Modell (gemein)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="response-area draggable" id="response-area">
+                <div class="handle"></div>
+                <h2>Antwort des Sprachmodells</h2>
+                <div id="response-output" class="scrollable-content"></div>
+                <h2>Feedback</h2>
+                <div id="feedback-output" class="scrollable-content"></div>
+            </div>
+<!--             <div class="mentor draggable" id="mentor">
+                <div class="handle"></div>
+            </div> -->
+            <div class="password-area draggable" id="password-area">
+                <div class="handle"></div>
+                <input type="text" placeholder="Passwort eingeben" id="password-input">
+                <button onclick="submitPassword()">Eingeben</button>
+            </div>
+            <footer>
+                <button onclick="prevLevel()">Zurück</button>
+                <button onclick="nextLevel()">Weiter</button>
+                <button onclick="showTip()">Tipp</button>
+                <button onclick="newConvo()">Neue Konversation</button>
+                <button onclick="clearApiKey()">API-Key ändern</button>
+            </footer>
+        </div>
+    </div>
+</body>
+</html>

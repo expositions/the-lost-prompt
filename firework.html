@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fireworks Test</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #000;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        #startButton {
+            padding: 15px 30px;
+            font-size: 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #startButton:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <button id="startButton">Start Fireworks</button>
+
+    <script>
+        // Firework parameters
+        const numRockets = 10; // Number of rockets
+        const maxHeight = window.innerHeight * 0.5; // Max height (in pixels)
+        const duration = 5000; // Duration of the show (in milliseconds)
+        const gravity = 0.05;
+
+        // Random helper function
+        function random(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        // Rocket class
+        class Rocket {
+            constructor() {
+                this.x = random(50, window.innerWidth - 50);
+                this.y = window.innerHeight;
+                this.speed = random(5, 10);
+                this.angle = random(-1, 1);
+                this.explosionHeight = random(maxHeight * 0.5, maxHeight);
+                this.exploded = false;
+                this.particles = [];
+            }
+
+            update(ctx) {
+                if (!this.exploded) {
+                    // Update rocket position
+                    this.y -= this.speed;
+                    this.x += this.angle;
+
+                    // Draw rocket tail
+                    ctx.beginPath();
+                    ctx.moveTo(this.x, this.y);
+                    ctx.lineTo(this.x - this.angle * 10, this.y + 20);
+                    ctx.strokeStyle = 'white';
+                    ctx.stroke();
+
+                    // Check if rocket reached explosion height
+                    if (this.y <= this.explosionHeight) {
+                        this.exploded = true;
+                        this.explode();
+                    }
+                } else {
+                    // Update particles
+                    this.particles.forEach(p => p.update(ctx));
+                    this.particles = this.particles.filter(p => !p.isFaded());
+                }
+            }
+
+            explode() {
+                const numParticles = random(50, 100);
+                for (let i = 0; i < numParticles; i++) {
+                    this.particles.push(new Particle(this.x, this.y));
+                }
+            }
+
+            isFinished() {
+                return this.exploded && this.particles.length === 0;
+            }
+        }
+
+        // Particle class
+        class Particle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.speedX = random(-3, 3);
+                this.speedY = random(-3, 3);
+                this.size = random(2, 4);
+                this.color = `hsl(${random(0, 360)}, 100%, 50%)`;
+                this.alpha = 1;
+            }
+
+            update(ctx) {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.speedY += gravity;
+                this.alpha -= 0.02;
+                this.size *= 0.98;
+
+                // Draw particle
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.alpha;
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+
+            isFaded() {
+                return this.alpha <= 0;
+            }
+        }
+
+        function startFireworks() {
+            console.log('Starting fireworks...');
+            // Create canvas and context
+            const canvas = document.createElement('canvas');
+            document.body.appendChild(canvas);
+            canvas.style.position = 'fixed';
+            canvas.style.top = '0';
+            canvas.style.left = '0';
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+            canvas.style.pointerEvents = 'none';
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            const ctx = canvas.getContext('2d');
+
+            // Launch fireworks
+            let rockets = [];
+            for (let i = 0; i < numRockets; i++) {
+                setTimeout(() => rockets.push(new Rocket()), random(0, duration));
+            }
+
+            // Main animation loop
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                rockets.forEach((rocket, index) => {
+                    rocket.update(ctx);
+                    if (rocket.isFinished()) rockets.splice(index, 1);
+                });
+
+                if (rockets.length > 0) {
+                    requestAnimationFrame(animate);
+                } else {
+                    canvas.remove();
+                }
+            }
+
+            animate();
+        }
+
+        document.getElementById('startButton').addEventListener('click', startFireworks);
+    </script>
+</body>
+</html>
